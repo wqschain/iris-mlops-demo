@@ -1,4 +1,4 @@
-from fastapi import FastAPI 
+from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 import joblib
 import logging 
@@ -25,6 +25,17 @@ class FlowerInput(BaseModel):
 def predict_species(flower: FlowerInput):
     flower_data = [[flower.sepal_length, flower.sepal_width, flower.petal_length, flower.petal_width]] 
     logger.info(f"Received prediction request: {flower_data}")
-    prediction = model.predict(flower_data)
-    logger.info(f"Prediction result: {int(prediction[0])}")
-    return int(prediction[0])
+    try :
+        prediction = model.predict(flower_data)
+        logger.info(f"Prediction result: {int(prediction[0])}")
+        return int(prediction[0])
+    except Exception as e: 
+        logger.error(f"Prediction failed: {e}")
+        raise HTTPException(status_code=500, detail="Prediction failed")
+
+
+@app.get("/health")
+def health_check():
+     return {"status": "ok"}
+    
+    

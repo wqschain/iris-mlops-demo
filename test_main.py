@@ -24,3 +24,10 @@ def test_predict_invalid_input():
         "petal_width": 0.2
     })
     assert response.status_code == 422
+
+def test_health_check():
+    response = client.get("/health")
+    assert response.status_code == 200
+    assert response.json() == {"status": "ok"}
+
+
